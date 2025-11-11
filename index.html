@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Usage Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .token-breakdown, .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .device-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .device-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .device-updated {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .device-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.2s;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #c33;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .device-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Claude Usage Tracker</h1>
+            <p>Multi-device usage statistics</p>
+        </div>
+
+        <div id="content">
+            <div class="card">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading usage data...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with Claude Code |
+            <a href="https://github.com/bohee-connectome/claude-usage-sync" style="color: white;">View on GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_REPO = 'bohee-connectome/claude-usage-sync';
+        const BRANCH = 'main';
+        const DATA_DIR = 'data';
+
+        const PRICING = {
+            input: 3 / 1_000_000,        // $3 per 1M tokens
+            output: 15 / 1_000_000,       // $15 per 1M tokens
+            cache_write: 3.75 / 1_000_000, // $3.75 per 1M tokens
+            cache_read: 0.30 / 1_000_000   // $0.30 per 1M tokens
+        };
+
+        async function fetchDeviceList() {
+            const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${DATA_DIR}?ref=${BRANCH}`;
+            const response = await fetch(url);
+            const files = await response.json();
+            return files
+                .filter(file => file.name.endsWith('.json'))
+                .map(file => file.name.replace('.json', ''));
+        }
+
+        async function fetchDeviceData(deviceId) {
+            const url = `https://raw.githubusercontent.com/${GITHUB_REPO}/${BRANCH}/${DATA_DIR}/${deviceId}.json`;
+            const response = await fetch(url);
+            return await response.json();
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en-US');
+        }
+
+        function formatCost(cost) {
+            return `$${cost.toFixed(2)}`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function calculateCost(usage) {
+            const inputCost = usage.input_tokens * PRICING.input;
+            const outputCost = usage.output_tokens * PRICING.output;
+            const cacheWriteCost = usage.cache_creation_tokens * PRICING.cache_write;
+            const cacheReadCost = usage.cache_read_tokens * PRICING.cache_read;
+
+            return {
+                input: inputCost,
+                output: outputCost,
+                cache_write: cacheWriteCost,
+                cache_read: cacheReadCost,
+                total: inputCost + outputCost + cacheWriteCost + cacheReadCost
+            };
+        }
+
+        function renderData(devices) {
+            // Calculate totals
+            const totalUsage = {
+                input_tokens: 0,
+                output_tokens: 0,
+                cache_creation_tokens: 0,
+                cache_read_tokens: 0,
+                total_sessions: 0
+            };
+
+            devices.forEach(device => {
+                totalUsage.input_tokens += device.data.usage.input_tokens;
+                totalUsage.output_tokens += device.data.usage.output_tokens;
+                totalUsage.cache_creation_tokens += device.data.usage.cache_creation_tokens;
+                totalUsage.cache_read_tokens += device.data.usage.cache_read_tokens;
+                totalUsage.total_sessions += device.data.usage.total_sessions;
+            });
+
+            const totalCost = calculateCost(totalUsage);
+            const totalProcessed = totalUsage.input_tokens +
+                                  totalUsage.output_tokens +
+                                  totalUsage.cache_creation_tokens;
+
+            // Get date range
+            const dates = devices.map(d => new Date(d.data.period_start));
+            const startDate = new Date(Math.min(...dates)).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const endDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const html = `
+                <div class="card">
+                    <h2 class="section-title">📊 Summary</h2>
+                    <p style="color: #666; margin-bottom: 20px;">Period: ${startDate} - ${endDate}</p>
+
+                    <div class="summary">
+                        <div class="stat">
+                            <div class="stat-value">${devices.length}</div>
+                            <div class="stat-label">Devices</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${formatNumber(totalUsage.total_sessions)}</div>
+                            <div class="stat-label">Total Sessions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${formatNumber(totalProcessed)}</div>
+                            <div class="stat-label">Tokens Processed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${formatCost(totalCost.total)}</div>
+                            <div class="stat-label">Estimated Cost</div>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">🔢 Token Breakdown</h2>
+                    <div class="token-breakdown">
+                        <div class="metric">
+                            <div class="metric-label">Input Tokens</div>
+                            <div class="metric-value">${formatNumber(totalUsage.input_tokens)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Output Tokens</div>
+                            <div class="metric-value">${formatNumber(totalUsage.output_tokens)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Cache Creation</div>
+                            <div class="metric-value">${formatNumber(totalUsage.cache_creation_tokens)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Cache Read</div>
+                            <div class="metric-value">${formatNumber(totalUsage.cache_read_tokens)}</div>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">💵 Cost Breakdown (Sonnet 4.5)</h2>
+                    <div class="cost-breakdown">
+                        <div class="metric">
+                            <div class="metric-label">Input</div>
+                            <div class="metric-value">${formatCost(totalCost.input)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Output</div>
+                            <div class="metric-value">${formatCost(totalCost.output)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Cache Write</div>
+                            <div class="metric-value">${formatCost(totalCost.cache_write)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Cache Read</div>
+                            <div class="metric-value">${formatCost(totalCost.cache_read)}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="section-title">💻 Device Details</h2>
+                    ${devices.map(device => {
+                        const cost = calculateCost(device.data.usage);
+                        const processed = device.data.usage.input_tokens +
+                                        device.data.usage.output_tokens +
+                                        device.data.usage.cache_creation_tokens;
+                        return `
+                            <div class="device-card">
+                                <div class="device-header">
+                                    <div class="device-name">🖥️ ${device.id}</div>
+                                    <div class="device-updated">Updated: ${formatDate(device.data.last_updated)}</div>
+                                </div>
+                                <div class="device-stats">
+                                    <div class="metric">
+                                        <div class="metric-label">Sessions</div>
+                                        <div class="metric-value">${formatNumber(device.data.usage.total_sessions)}</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-label">Tokens</div>
+                                        <div class="metric-value">${formatNumber(processed)}</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-label">Cost</div>
+                                        <div class="metric-value">${formatCost(cost.total)}</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-label">Cache Read</div>
+                                        <div class="metric-value">${formatNumber(device.data.usage.cache_read_tokens)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function renderError(error) {
+            const html = `
+                <div class="card">
+                    <div class="error">
+                        <h3 style="margin-bottom: 10px;">❌ Error Loading Data</h3>
+                        <p>${error.message}</p>
+                        <button class="refresh-btn" onclick="loadData()" style="margin-top: 15px;">Try Again</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
+
+        async function loadData() {
+            try {
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <div>Loading usage data...</div>
+                        </div>
+                    </div>
+                `;
+
+                const deviceIds = await fetchDeviceList();
+                const devices = await Promise.all(
+                    deviceIds.map(async id => ({
+                        id,
+                        data: await fetchDeviceData(id)
+                    }))
+                );
+
+                // Sort by last updated (most recent first)
+                devices.sort((a, b) =>
+                    new Date(b.data.last_updated) - new Date(a.data.last_updated)
+                );
+
+                renderData(devices);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                renderError(error);
+            }
+        }
+
+        // Load data on page load
+        loadData();
+
+        // Auto-refresh every 5 minutes
+        setInterval(loadData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
