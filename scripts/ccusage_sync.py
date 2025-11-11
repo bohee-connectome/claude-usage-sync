@@ -149,7 +149,7 @@ def sync_usage():
 
     print("📊 Exporting local usage...")
     result = subprocess.run(
-        ['python3', '/Users/default/export_usage.py', str(output_file)],
+        [sys.executable, str(Path(__file__).parent / 'export_usage.py'), str(output_file)],
         capture_output=True,
         text=True
     )
