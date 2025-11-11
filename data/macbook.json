@@ -1,0 +1,14 @@
+{
+  "device_id": "mac",
+  "last_updated": "2025-11-11T02:14:22.119321+00:00",
+  "period_start": "2025-10-01",
+  "period_end": "2025-11-11",
+  "usage": {
+    "input_tokens": 6012,
+    "output_tokens": 259545,
+    "cache_creation_tokens": 5267687,
+    "cache_read_tokens": 44695297,
+    "total_sessions": 760
+  },
+  "estimated_cost": 37.07
+}
