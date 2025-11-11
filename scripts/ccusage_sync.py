@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
 Sync local Claude usage to Git repository
+
+Created & Directed by Bohee Lee
+https://github.com/bohee-connectome
+
+Built with Claude Code
 """
 
 import os

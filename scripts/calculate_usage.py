@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
 Calculate total Claude usage from October 2025 to present
+
+Created & Directed by Bohee Lee
+https://github.com/bohee-connectome
+
+Built with Claude Code
 """
 
 import json

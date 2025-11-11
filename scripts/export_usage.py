@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
 Export local Claude usage to JSON file
+
+Created & Directed by Bohee Lee
+https://github.com/bohee-connectome
+
+Built with Claude Code
 """
 
 import json

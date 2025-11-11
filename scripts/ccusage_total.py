@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
 Show combined Claude usage from all devices
+
+Created & Directed by Bohee Lee
+https://github.com/bohee-connectome
+
+Built with Claude Code
 """
 
 import json

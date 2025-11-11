@@ -1,5 +1,7 @@
 # Claude Usage Tracker
 
+> **Created by Bohee Lee** | [English Version](./README_EN.md)
+
 멀티 디바이스 Claude Code 사용량을 Git으로 통합 관리하는 시스템입니다.
 
 ## 🌐 웹사이트
@@ -254,4 +256,12 @@ brew install python3
 
 ---
 
-**Made with Claude Code** 🤖
+## 👤 Credits
+
+**Created & Directed by [Bohee Lee](https://github.com/bohee-connectome)**
+
+Built with [Claude Code](https://claude.ai/code) 🤖
+
+---
+
+© 2025 Bohee Lee | [English Version](./README_EN.md)
