@@ -29,7 +29,7 @@ cutoff_date = datetime(2025, 10, 1, tzinfo=timezone.utc)
 # Process each file
 for jsonl_file in jsonl_files:
     try:
-        with open(jsonl_file, 'r') as f:
+        with open(jsonl_file, 'r', encoding='utf-8') as f:
             for line in f:
                 if not line.strip():
                     continue

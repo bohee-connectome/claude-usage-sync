@@ -35,7 +35,7 @@ def calculate_local_usage():
 
     for jsonl_file in jsonl_files:
         try:
-            with open(jsonl_file, 'r') as f:
+            with open(jsonl_file, 'r', encoding='utf-8') as f:
                 for line in f:
                     if not line.strip():
                         continue
@@ -109,7 +109,7 @@ def export_usage(output_file=None):
         output_file = Path(output_file)
 
     # Write JSON
-    with open(output_file, 'w') as f:
+    with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(export_data, f, indent=2)
 
     print(f"✅ Usage exported to: {output_file}")
