@@ -158,6 +158,7 @@ ccusage-total
 ```
 claude-usage-tracker/
 ├── README.md
+├── index.html              # GitHub Pages 웹사이트
 ├── scripts/
 │   ├── calculate_usage.py   # 로컬 사용량 계산
 │   ├── export_usage.py      # JSON export
@@ -168,6 +169,67 @@ claude-usage-tracker/
     ├── windows-pc.json
     └── ...
 ```
+
+## 🎁 다른 사람이 사용하기
+
+이 프로젝트를 본인의 GitHub 계정에서 사용하려면:
+
+### 1️⃣ 리포지토리 복사
+
+**방법 A: Fork (추천)**
+1. 이 리포지토리의 GitHub 페이지에서 "Fork" 버튼 클릭
+2. 본인 계정에 복사됨
+
+**방법 B: 새 리포지토리 생성**
+```bash
+gh repo create my-claude-usage-sync --public
+cd ~/my-claude-usage-sync
+# 이 리포의 파일들 복사
+```
+
+### 2️⃣ index.html 수정 (중요!)
+
+`index.html` 파일을 열고 **9번째 줄** 근처의 설정을 수정:
+
+```javascript
+// 이 부분을 본인의 GitHub 계정/리포지토리로 변경
+const GITHUB_REPO = 'bohee-connectome/claude-usage-sync';  // ❌ 원본
+const GITHUB_REPO = 'your-username/your-repo-name';        // ✅ 본인 것으로 변경
+```
+
+**예시:**
+```javascript
+const GITHUB_REPO = 'john-doe/my-claude-tracker';
+```
+
+### 3️⃣ GitHub Pages 활성화
+
+1. GitHub 리포지토리 → **Settings** 탭
+2. 왼쪽 메뉴에서 **Pages** 클릭
+3. **Source** 설정:
+   - Branch: `main` 선택
+   - Folder: `/ (root)` 선택
+   - **Save** 클릭
+4. 1-2분 후 웹사이트 주소 확인:
+   - `https://your-username.github.io/your-repo-name`
+
+### 4️⃣ 각 디바이스에 설치
+
+위의 "맥북 설정" 또는 "Windows PC 설정" 가이드를 따르되, **본인의 리포지토리**를 클론:
+
+```bash
+# 본인 리포 클론
+gh repo clone your-username/your-repo-name claude-usage-tracker
+
+# 나머지는 동일하게 설정
+```
+
+### 5️⃣ 완료!
+
+- 터미널: `ccusage`, `ccusage-sync`, `ccusage-total` 사용
+- 웹사이트: `https://your-username.github.io/your-repo-name` 접속
+
+---
 
 ## 🔧 트러블슈팅
 

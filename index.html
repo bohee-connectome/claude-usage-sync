@@ -241,9 +241,15 @@
     </div>
 
     <script>
+        // ============================================================
+        // CONFIGURATION - MODIFY THIS FOR YOUR OWN INSTALLATION
+        // ============================================================
+        // Replace 'your-username/your-repo-name' with your GitHub repository
+        // Example: 'john-doe/my-claude-tracker'
         const GITHUB_REPO = 'bohee-connectome/claude-usage-sync';
         const BRANCH = 'main';
         const DATA_DIR = 'data';
+        // ============================================================
 
         const PRICING = {
             input: 3 / 1_000_000,        // $3 per 1M tokens
