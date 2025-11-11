@@ -59,6 +59,7 @@
             padding: 30px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.6s ease;
         }
 
         .loading {
@@ -85,18 +86,59 @@
         }
 
         .summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 20px;
             margin-bottom: 30px;
+        }
+
+        .stat-hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #021859 0%, #023059 100%);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(2, 24, 89, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-hero:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(2, 24, 89, 0.5);
+        }
+
+        .stat-hero-value {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .stat-hero-label {
+            font-size: 1.3em;
+            opacity: 0.95;
+            letter-spacing: 1px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
         }
 
         .stat {
             text-align: center;
             padding: 20px;
-            background: linear-gradient(135deg, #023059 0%, #021859 100%);
+            background: linear-gradient(135deg, #5D768C 0%, #023059 100%);
             border-radius: 10px;
             color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(93, 118, 140, 0.3);
         }
 
         .stat-value {
@@ -108,6 +150,17 @@
         .stat-label {
             font-size: 0.9em;
             opacity: 0.9;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .section-title {
@@ -130,6 +183,12 @@
             background: rgba(93, 118, 140, 0.08);
             border-radius: 8px;
             border-left: 4px solid #023059;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(2, 48, 89, 0.15);
         }
 
         .metric-label {
@@ -142,6 +201,37 @@
             font-size: 1.5em;
             font-weight: bold;
             color: #011140;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(93, 118, 140, 0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #023059 0%, #5D768C 100%);
+            border-radius: 4px;
+            transition: width 1s ease;
+            animation: progressGrow 1.5s ease;
+        }
+
+        @keyframes progressGrow {
+            from {
+                width: 0%;
+            }
+        }
+
+        .metric-percentage {
+            font-size: 0.85em;
+            color: #5D768C;
+            margin-top: 5px;
+            font-weight: 600;
         }
 
         .device-card {
@@ -150,6 +240,13 @@
             padding: 20px;
             margin-bottom: 15px;
             border-left: 5px solid #023059;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-width 0.3s ease;
+        }
+
+        .device-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(2, 48, 89, 0.2);
+            border-left-width: 8px;
         }
 
         .device-header {
@@ -219,7 +316,15 @@
                 font-size: 1.8em;
             }
 
-            .summary {
+            .stat-hero-value {
+                font-size: 2.5em;
+            }
+
+            .stat-hero-label {
+                font-size: 1em;
+            }
+
+            .summary-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -355,21 +460,24 @@
                     <p style="color: #666; margin-bottom: 20px;">Period: ${startDate} - ${endDate}</p>
 
                     <div class="summary">
-                        <div class="stat">
-                            <div class="stat-value">${devices.length}</div>
-                            <div class="stat-label">Devices</div>
+                        <div class="stat-hero">
+                            <div class="stat-hero-value">${formatNumber(totalProcessed)}</div>
+                            <div class="stat-hero-label">🔥 TOKENS PROCESSED</div>
                         </div>
-                        <div class="stat">
-                            <div class="stat-value">${formatNumber(totalUsage.total_sessions)}</div>
-                            <div class="stat-label">Total Sessions</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">${formatNumber(totalProcessed)}</div>
-                            <div class="stat-label">Tokens Processed</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">${formatCost(totalCost.total)}</div>
-                            <div class="stat-label">Estimated Cost</div>
+
+                        <div class="summary-grid">
+                            <div class="stat">
+                                <div class="stat-value">${devices.length}</div>
+                                <div class="stat-label">💻 Devices</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">${formatNumber(totalUsage.total_sessions)}</div>
+                                <div class="stat-label">📊 Sessions</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">${formatCost(totalCost.total)}</div>
+                                <div class="stat-label">💰 Cost</div>
+                            </div>
                         </div>
                     </div>
 
@@ -378,18 +486,31 @@
                         <div class="metric">
                             <div class="metric-label">Input Tokens</div>
                             <div class="metric-value">${formatNumber(totalUsage.input_tokens)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalUsage.input_tokens / totalProcessed * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalUsage.input_tokens / totalProcessed * 100).toFixed(1)}% of total</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Output Tokens</div>
                             <div class="metric-value">${formatNumber(totalUsage.output_tokens)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalUsage.output_tokens / totalProcessed * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalUsage.output_tokens / totalProcessed * 100).toFixed(1)}% of total</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Cache Creation</div>
                             <div class="metric-value">${formatNumber(totalUsage.cache_creation_tokens)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalUsage.cache_creation_tokens / totalProcessed * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalUsage.cache_creation_tokens / totalProcessed * 100).toFixed(1)}% of total</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Cache Read</div>
                             <div class="metric-value">${formatNumber(totalUsage.cache_read_tokens)}</div>
+                            <div class="metric-percentage" style="margin-top: 8px;">Not counted in processed tokens</div>
                         </div>
                     </div>
 
@@ -398,18 +519,34 @@
                         <div class="metric">
                             <div class="metric-label">Input</div>
                             <div class="metric-value">${formatCost(totalCost.input)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalCost.input / totalCost.total * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalCost.input / totalCost.total * 100).toFixed(1)}% of total cost</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Output</div>
                             <div class="metric-value">${formatCost(totalCost.output)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalCost.output / totalCost.total * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalCost.output / totalCost.total * 100).toFixed(1)}% of total cost</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Cache Write</div>
                             <div class="metric-value">${formatCost(totalCost.cache_write)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalCost.cache_write / totalCost.total * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalCost.cache_write / totalCost.total * 100).toFixed(1)}% of total cost</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Cache Read</div>
                             <div class="metric-value">${formatCost(totalCost.cache_read)}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${(totalCost.cache_read / totalCost.total * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="metric-percentage">${(totalCost.cache_read / totalCost.total * 100).toFixed(1)}% of total cost</div>
                         </div>
                     </div>
                 </div>
