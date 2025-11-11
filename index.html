@@ -253,7 +253,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            padding: 15px;
+            margin: -20px -20px 0 -20px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: background 0.3s ease;
+            user-select: none;
+        }
+
+        .device-header:hover {
+            background: rgba(2, 48, 89, 0.05);
+        }
+
+        .device-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .device-toggle-icon {
+            font-size: 1.2em;
+            color: #023059;
+            transition: transform 0.3s ease;
+        }
+
+        .device-toggle-icon.open {
+            transform: rotate(90deg);
         }
 
         .device-name {
@@ -265,6 +290,19 @@
         .device-updated {
             font-size: 0.9em;
             color: #666;
+        }
+
+        .device-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease, margin-top 0.3s ease;
+            opacity: 0;
+        }
+
+        .device-details.open {
+            max-height: 1000px;
+            opacity: 1;
+            margin-top: 20px;
         }
 
         .device-stats {
@@ -330,6 +368,20 @@
 
             .device-stats {
                 grid-template-columns: 1fr;
+            }
+
+            .device-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .device-name {
+                font-size: 1.1em;
+            }
+
+            .device-updated {
+                font-size: 0.8em;
             }
         }
     </style>
@@ -553,33 +605,38 @@
 
                 <div class="card">
                     <h2 class="section-title">💻 Device Details</h2>
-                    ${devices.map(device => {
+                    ${devices.map((device, index) => {
                         const cost = calculateCost(device.data.usage);
                         const processed = device.data.usage.input_tokens +
                                         device.data.usage.output_tokens +
                                         device.data.usage.cache_creation_tokens;
                         return `
                             <div class="device-card">
-                                <div class="device-header">
-                                    <div class="device-name">🖥️ ${device.id}</div>
+                                <div class="device-header" onclick="toggleDevice(${index})">
+                                    <div class="device-header-left">
+                                        <span class="device-toggle-icon" id="toggle-icon-${index}">▶</span>
+                                        <div class="device-name">🖥️ ${device.id}</div>
+                                    </div>
                                     <div class="device-updated">Updated: ${formatDate(device.data.last_updated)}</div>
                                 </div>
-                                <div class="device-stats">
-                                    <div class="metric">
-                                        <div class="metric-label">Sessions</div>
-                                        <div class="metric-value">${formatNumber(device.data.usage.total_sessions)}</div>
-                                    </div>
-                                    <div class="metric">
-                                        <div class="metric-label">Tokens</div>
-                                        <div class="metric-value">${formatNumber(processed)}</div>
-                                    </div>
-                                    <div class="metric">
-                                        <div class="metric-label">Cost</div>
-                                        <div class="metric-value">${formatCost(cost.total)}</div>
-                                    </div>
-                                    <div class="metric">
-                                        <div class="metric-label">Cache Read</div>
-                                        <div class="metric-value">${formatNumber(device.data.usage.cache_read_tokens)}</div>
+                                <div class="device-details" id="device-details-${index}">
+                                    <div class="device-stats">
+                                        <div class="metric">
+                                            <div class="metric-label">Sessions</div>
+                                            <div class="metric-value">${formatNumber(device.data.usage.total_sessions)}</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-label">Tokens</div>
+                                            <div class="metric-value">${formatNumber(processed)}</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-label">Cost</div>
+                                            <div class="metric-value">${formatCost(cost.total)}</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-label">Cache Read</div>
+                                            <div class="metric-value">${formatNumber(device.data.usage.cache_read_tokens)}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -634,6 +691,22 @@
             } catch (error) {
                 console.error('Error loading data:', error);
                 renderError(error);
+            }
+        }
+
+        // Toggle device details
+        function toggleDevice(index) {
+            const details = document.getElementById(`device-details-${index}`);
+            const icon = document.getElementById(`toggle-icon-${index}`);
+
+            if (details.classList.contains('open')) {
+                details.classList.remove('open');
+                icon.classList.remove('open');
+                icon.textContent = '▶';
+            } else {
+                details.classList.add('open');
+                icon.classList.add('open');
+                icon.textContent = '▼';
             }
         }
 
