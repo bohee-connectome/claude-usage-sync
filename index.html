@@ -262,7 +262,9 @@
         }
 
         async function fetchDeviceData(deviceId) {
-            const url = `https://raw.githubusercontent.com/${GITHUB_REPO}/${BRANCH}/${DATA_DIR}/${deviceId}.json`;
+            // Add timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            const url = `https://raw.githubusercontent.com/${GITHUB_REPO}/${BRANCH}/${DATA_DIR}/${deviceId}.json?t=${timestamp}`;
             const response = await fetch(url);
             return await response.json();
         }
