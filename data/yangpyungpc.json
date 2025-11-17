@@ -1,14 +1,14 @@
 {
   "device_id": "yangpyungpc",
-  "last_updated": "2025-11-16T20:28:01.711667+00:00",
+  "last_updated": "2025-11-17T03:04:56.513475+00:00",
   "period_start": "2025-10-01",
-  "period_end": "2025-11-16",
+  "period_end": "2025-11-17",
   "usage": {
-    "input_tokens": 69041,
-    "output_tokens": 1258805,
-    "cache_creation_tokens": 30443658,
-    "cache_read_tokens": 224262262,
-    "total_sessions": 3376
+    "input_tokens": 69116,
+    "output_tokens": 1262003,
+    "cache_creation_tokens": 30755759,
+    "cache_read_tokens": 224763133,
+    "total_sessions": 3383
   },
-  "estimated_cost": 200.53
+  "estimated_cost": 201.9
 }
