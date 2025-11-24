@@ -169,14 +169,41 @@ def sync_usage():
     # Git sync
     print("🔄 Syncing to Git...")
 
+    should_pop_stash = False
     try:
-        # Pull latest
-        subprocess.run(['git', 'pull', '--rebase'], cwd=repo_path, check=False)
+        # Check for unstaged changes (excluding data/)
+        status_result = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            cwd=repo_path,
+            capture_output=True,
+            text=True
+        )
+        
+        # Check if there are changes other than data/ directory
+        other_changes = [line for line in status_result.stdout.splitlines() 
+                        if line and not line.strip().startswith('??') and 'data/' not in line]
+        
+        # Stash other changes if any (before pull --rebase)
+        if other_changes:
+            print("📦 Stashing other changes...")
+            subprocess.run(['git', 'stash', '--include-untracked', '-m', 'Auto-stash before sync'], 
+                         cwd=repo_path, check=False, capture_output=True)
+            should_pop_stash = True
 
-        # Add changes
+        # Fetch and pull FIRST (before adding local changes)
+        subprocess.run(['git', 'fetch', 'origin'], cwd=repo_path, check=False, capture_output=True)
+
+        pull_result = subprocess.run(
+            ['git', 'pull', '--rebase', 'origin', 'main'],
+            cwd=repo_path,
+            capture_output=True,
+            text=True
+        )
+
+        # Add data changes AFTER pull (so rebase doesn't unstage them)
         subprocess.run(['git', 'add', 'data/'], cwd=repo_path, check=True)
 
-        # Commit
+        # Commit data changes if any
         commit_msg = f"Update usage from {device_id} - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
         result = subprocess.run(
             ['git', 'commit', '-m', commit_msg],
@@ -207,9 +234,23 @@ def sync_usage():
             else:
                 print("⚠️  Commit failed")
                 print(result.stderr)
+        
+        # Restore stashed changes if any
+        if should_pop_stash:
+            pop_result = subprocess.run(
+                ['git', 'stash', 'pop'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            if pop_result.returncode == 0:
+                print("📦 Restored stashed changes")
 
     except subprocess.CalledProcessError as e:
         print(f"❌ Git operation failed: {e}")
+        # Restore stash even on error
+        if should_pop_stash:
+            subprocess.run(['git', 'stash', 'pop'], cwd=repo_path, check=False)
         sys.exit(1)
 
     print()
