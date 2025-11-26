@@ -8,6 +8,14 @@ https://github.com/bohee-connectome
 Built with Claude Code
 """
 
+import sys
+import io
+
+# Set UTF-8 encoding for stdout on Windows
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 import json
 import socket
 from datetime import datetime, timezone
@@ -126,6 +134,5 @@ def export_usage(output_file=None):
     return output_file
 
 if __name__ == "__main__":
-    import sys
     output = sys.argv[1] if len(sys.argv) > 1 else None
     export_usage(output)

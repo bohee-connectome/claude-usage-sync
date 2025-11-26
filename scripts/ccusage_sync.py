@@ -156,7 +156,8 @@ def sync_usage():
     result = subprocess.run(
         [sys.executable, str(Path(__file__).parent / 'export_usage.py'), str(output_file)],
         capture_output=True,
-        text=True
+        text=True,
+        encoding='utf-8'
     )
 
     if result.returncode != 0:
@@ -171,7 +172,8 @@ def sync_usage():
 
     try:
         # Pull latest
-        subprocess.run(['git', 'pull', '--rebase'], cwd=repo_path, check=False)
+        subprocess.run(['git', 'pull', '--rebase'], cwd=repo_path, check=False,
+                      capture_output=True, encoding='utf-8')
 
         # Add changes
         subprocess.run(['git', 'add', 'data/'], cwd=repo_path, check=True)
@@ -182,7 +184,8 @@ def sync_usage():
             ['git', 'commit', '-m', commit_msg],
             cwd=repo_path,
             capture_output=True,
-            text=True
+            text=True,
+            encoding='utf-8'
         )
 
         if result.returncode == 0:
@@ -193,7 +196,8 @@ def sync_usage():
                 ['git', 'push'],
                 cwd=repo_path,
                 capture_output=True,
-                text=True
+                text=True,
+                encoding='utf-8'
             )
 
             if push_result.returncode == 0:
