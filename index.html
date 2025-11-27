@@ -45,24 +45,28 @@
         .total-processed {
             text-align: center;
             margin-bottom: 20px;
-            padding: 15px;
-            background: #f0f0f0;
-            border-radius: 10px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .total-processed .label {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 5px;
+            color: #555;
+            font-size: 1em;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
         .total-processed .value {
-            font-size: 1.8em;
+            font-size: 3em;
             font-weight: bold;
             color: #667eea;
+            line-height: 1.2;
         }
         .total-processed .exact {
-            color: #999;
-            font-size: 0.9em;
-            margin-top: 5px;
+            color: #667eea;
+            font-size: 1.2em;
+            margin-top: 8px;
+            opacity: 0.7;
         }
         .progress-header {
             display: flex;
@@ -105,8 +109,14 @@
             border-radius: 10px;
             border-left: 4px solid #ffc107;
         }
-        .projection.success { background: #d4edda; border-left-color: #28a745; }
-        .projection.warning { background: #f8d7da; border-left-color: #dc3545; }
+        .projection.success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-left-color: #28a745;
+        }
+        .projection.warning {
+            background: linear-gradient(135deg, #e3d5f7 0%, #d6c9ea 100%);
+            border-left-color: #9b59b6;
+        }
         .projection-title { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #333; }
         .loading { text-align: center; padding: 40px; color: #666; }
         .devices-section { margin-top: 40px; }
@@ -126,34 +136,54 @@
         .devices-list { display: none; }
         .devices-list.open { display: block; }
         .device-card {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         .device-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
         }
         .device-name {
-            font-size: 1.2em;
+            font-size: 1.5em;
             font-weight: bold;
             color: #333;
         }
         .device-cost {
-            color: #667eea;
-            font-size: 1.1em;
-            font-weight: bold;
+            color: #999;
+            font-size: 0.95em;
+            font-weight: normal;
         }
         .device-stats {
-            color: #666;
-            font-size: 0.9em;
-            line-height: 1.6;
+            color: #555;
+            font-size: 1.05em;
+            line-height: 2;
         }
-        .device-stats strong { color: #333; }
+        .device-stats strong {
+            color: #333;
+            font-weight: 600;
+        }
+        .device-total {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        .device-updated {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 1em;
+            color: #667eea;
+            font-weight: 600;
+        }
         .footer {
             margin-top: 40px;
             padding-top: 30px;
@@ -283,8 +313,8 @@
                 document.getElementById('totalDevices').textContent=data.length;
                 document.getElementById('totalSessions').textContent=u.s.toLocaleString();
                 document.getElementById('totalCost').textContent='$'+cost.toFixed(2);
-                document.getElementById('totalProcessed').textContent=fmt(tot);
-                document.getElementById('totalProcessedExact').textContent=tot.toLocaleString()+' tokens';
+                document.getElementById('totalProcessed').textContent=tot.toLocaleString();
+                document.getElementById('totalProcessedExact').textContent=fmt(tot);
                 document.getElementById('percentage').textContent=pct.toFixed(1)+'%';
                 document.getElementById('current').textContent=fmt(tot);
                 document.getElementById('remaining').textContent=fmt(rem);
@@ -317,15 +347,20 @@
                     return`<div class="device-card">
                         <div class="device-header">
                             <div class="device-name">🖥️ ${d.device_id}</div>
-                            <div class="device-cost">$${(d.estimated_cost||0).toFixed(2)}</div>
+                            <div class="device-cost">Cost: $${(d.estimated_cost||0).toFixed(2)}</div>
+                        </div>
+                        <div class="device-total">
+                            💰 ${devTot.toLocaleString()} tokens
+                            <div style="font-size:0.6em;opacity:0.7;margin-top:5px;">${fmt(devTot)}</div>
                         </div>
                         <div class="device-stats">
-                            <strong>Total Processed:</strong> ${fmt(devTot)} (${devTot.toLocaleString()} tokens)<br>
-                            <strong>Sessions:</strong> ${usage.total_sessions.toLocaleString()}<br>
-                            <strong>Input:</strong> ${usage.input_tokens.toLocaleString()} |
-                            <strong>Output:</strong> ${usage.output_tokens.toLocaleString()}<br>
-                            <strong>Cache Creation:</strong> ${usage.cache_creation_tokens.toLocaleString()}<br>
-                            <strong>Last Updated:</strong> ${lastUpd}
+                            <div><strong>Sessions:</strong> ${usage.total_sessions.toLocaleString()}</div>
+                            <div><strong>Input:</strong> ${usage.input_tokens.toLocaleString()} tokens</div>
+                            <div><strong>Output:</strong> ${usage.output_tokens.toLocaleString()} tokens</div>
+                            <div><strong>Cache Creation:</strong> ${usage.cache_creation_tokens.toLocaleString()} tokens</div>
+                        </div>
+                        <div class="device-updated">
+                            🕒 Last Updated: ${lastUpd}
                         </div>
                     </div>`
                 }).join('');
