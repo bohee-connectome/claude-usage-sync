@@ -157,6 +157,46 @@ html = """<!DOCTYPE html>
             line-height: 1.6;
         }
         .device-stats strong { color: #333; }
+        .footer {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .footer-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+        .last-updated-footer {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #999;
+        }
     </style>
 </head>
 <body>
@@ -201,6 +241,18 @@ html = """<!DOCTYPE html>
                     <span>📱 Device Breakdown</span>
                 </div>
                 <div class="devices-list" id="devicesList"></div>
+            </div>
+            <div class="footer">
+                <div class="footer-links">
+                    <a href="https://github.com/bohee-connectome/claude-usage-sync" target="_blank" class="footer-link">📁 GitHub Repository</a>
+                    <button class="refresh-btn" onclick="load()">🔄 Refresh Data</button>
+                </div>
+                <div class="last-updated-footer">
+                    Last updated: <span id="lastUpdatedFooter">-</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9em;">
+                    Made with ❤️ by <strong>Bohee Lee</strong>
+                </div>
             </div>
         </div>
     </div>
@@ -280,6 +332,8 @@ html = """<!DOCTYPE html>
                         </div>
                     </div>`
                 }).join('');
+                const latestUpdate=data.map(d=>new Date(d.last_updated)).sort((a,b)=>b-a)[0];
+                document.getElementById('lastUpdatedFooter').textContent=latestUpdate.toLocaleString('ko-KR');
                 document.getElementById('loading').style.display='none';
                 document.getElementById('content').style.display='block'
             }catch(e){
