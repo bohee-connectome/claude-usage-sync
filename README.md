@@ -35,6 +35,16 @@
 | **`ccusage-goal`** | 100M 토큰 목표 진행률 | 목표 추적 시 |
 | **[웹사이트](https://bohee-connectome.github.io/claude-usage-sync)** | 실시간 웹 조회 | 언제든 |
 
+### 💰 ccusage 주요 출력 정보
+
+`ccusage` 실행 시 다음 정보가 표시됩니다:
+- **📊 CUMULATIVE TOTAL SESSIONS**: 총 세션 수
+- **💰 TOTAL PROCESSED**: Input + Output + Cache Creation 합계 (100M 목표 기준)
+- **🔢 CUMULATIVE TOKEN TOTALS**: 토큰 종류별 상세 사용량
+- **💵 ESTIMATED COST**: 예상 비용 (Sonnet 4.5 기준)
+
+**💰 TOTAL PROCESSED**는 웹 대시보드와 동일한 수치로, 100M 토큰 목표 달성에 카운트되는 숫자입니다.
+
 ---
 
 ## 💡 누적 추적 시스템이란?
