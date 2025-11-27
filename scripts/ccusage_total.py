@@ -10,9 +10,15 @@ Built with Claude Code
 
 import json
 import sys
+import io
 import subprocess
 from pathlib import Path
 from datetime import datetime
+
+# Set UTF-8 encoding for Windows
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 CONFIG_FILE = Path.home() / ".claude" / "usage_sync_config.json"
 

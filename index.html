@@ -296,8 +296,9 @@
         async function load(){
             try{
                 const devs=['yangpyungpc','bohees-macbook-air-local'];
+                const baseUrl='https://raw.githubusercontent.com/bohee-connectome/claude-usage-sync/main/data';
                 const data=(await Promise.all(devs.map(async d=>{
-                    const r=await fetch(`data/${d}.json`);
+                    const r=await fetch(`${baseUrl}/${d}.json`);
                     return r.ok?await r.json():null
                 }))).filter(d=>d);
                 const u={i:0,o:0,c:0,s:0};
