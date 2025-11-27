@@ -42,6 +42,28 @@
         .stat-card .label { font-size: 0.9em; opacity: 0.9; margin-bottom: 5px; }
         .stat-card .value { font-size: 2em; font-weight: bold; }
         .progress-section { margin: 40px 0; }
+        .total-processed {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        .total-processed .label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .total-processed .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .total-processed .exact {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
         .progress-header {
             display: flex;
             justify-content: space-between;
@@ -87,6 +109,51 @@
         .projection.warning { background: #f8d7da; border-left-color: #dc3545; }
         .projection-title { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #333; }
         .loading { text-align: center; padding: 40px; color: #666; }
+        .devices-section { margin-top: 40px; }
+        .devices-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .devices-header:hover { color: #667eea; }
+        .toggle-icon { transition: transform 0.3s; }
+        .toggle-icon.open { transform: rotate(90deg); }
+        .devices-list { display: none; }
+        .devices-list.open { display: block; }
+        .device-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .device-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        .device-cost {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .device-stats {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .device-stats strong { color: #333; }
     </style>
 </head>
 <body>
@@ -103,6 +170,11 @@
                 <div class="stat-card"><div class="label">Total Cost</div><div class="value" id="totalCost">-</div></div>
             </div>
             <div class="progress-section">
+                <div class="total-processed">
+                    <div class="label">💰 TOTAL PROCESSED</div>
+                    <div class="value" id="totalProcessed">0M</div>
+                    <div class="exact" id="totalProcessedExact">0 tokens</div>
+                </div>
                 <div class="progress-header">
                     <span class="progress-label">🎯 Goal Progress</span>
                     <span class="progress-percentage" id="percentage">0%</span>
@@ -120,10 +192,99 @@
                 <div class="projection-title">🔮 Projection</div>
                 <div id="projectionContent"></div>
             </div>
+            <div class="devices-section">
+                <div class="devices-header" onclick="toggleDevices()">
+                    <span class="toggle-icon" id="toggleIcon">▶</span>
+                    <span>📱 Device Breakdown</span>
+                </div>
+                <div class="devices-list" id="devicesList"></div>
+            </div>
         </div>
     </div>
     <script>
-        const GOAL=100000000;function fmt(t){return(t/1000000).toFixed(2)+"M"}async function load(){try{const devs=['yangpyungpc','bohees-macbook-air-local'];const data=(await Promise.all(devs.map(async d=>{const r=await fetch(`data/${d}.json`);return r.ok?await r.json():null}))).filter(d=>d);const u={i:0,o:0,c:0,s:0};let cost=0;data.forEach(d=>{u.i+=d.usage.input_tokens||0;u.o+=d.usage.output_tokens||0;u.c+=d.usage.cache_creation_tokens||0;u.s+=d.usage.total_sessions||0;cost+=d.estimated_cost||0});const tot=u.i+u.o+u.c,rem=GOAL-tot,pct=tot/GOAL*100;document.getElementById('totalDevices').textContent=data.length;document.getElementById('totalSessions').textContent=u.s.toLocaleString();document.getElementById('totalCost').textContent='$'+cost.toFixed(2);document.getElementById('percentage').textContent=pct.toFixed(1)+'%';document.getElementById('current').textContent=fmt(tot);document.getElementById('remaining').textContent=fmt(rem);setTimeout(()=>document.getElementById('progressBar').style.width=Math.min(pct,100)+'%',100);const now=new Date(),dl=new Date('2025-12-31T23:59:59Z'),ps=new Date('2025-10-01T00:00:00Z');const dr=Math.ceil((dl-now)/86400000);if(dr>0){const de=Math.max(1,Math.ceil((now-ps)/86400000)),avg=tot/de;const td=Math.ceil((dl-ps)/86400000),proj=avg*td,dt=rem/dr;const p=document.getElementById('projection');p.style.display='block';let h=`<p><strong>Days remaining:</strong> ${dr}</p>`;h+=`<p><strong>Daily target:</strong> ${fmt(dt)}</p>`;h+=`<p><strong>Current pace:</strong> ${fmt(avg)}/day</p>`;h+=`<p><strong>Projected total:</strong> ${fmt(proj)}</p>`;if(proj>=GOAL){p.className='projection success';h+=`<p style="margin-top:10px;font-weight:bold;">✅ ON TRACK! (+${fmt(proj-GOAL)})</p>`}else{p.className='projection warning';h+=`<p style="margin-top:10px;font-weight:bold;">⚠️ BEHIND PACE (-${fmt(GOAL-proj)})<br>Need +${fmt(dt-avg)}/day</p>`}document.getElementById('projectionContent').innerHTML=h}document.getElementById('loading').style.display='none';document.getElementById('content').style.display='block'}catch(e){document.getElementById('loading').innerHTML='<p>❌ Error loading data</p>'}}load();setInterval(load,300000);
+        const GOAL=100000000;
+        function fmt(t){return(t/1000000).toFixed(2)+"M"}
+        function toggleDevices(){
+            const list=document.getElementById('devicesList');
+            const icon=document.getElementById('toggleIcon');
+            list.classList.toggle('open');
+            icon.classList.toggle('open');
+            icon.textContent=list.classList.contains('open')?'▼':'▶';
+        }
+        async function load(){
+            try{
+                const devs=['yangpyungpc','bohees-macbook-air-local'];
+                const data=(await Promise.all(devs.map(async d=>{
+                    const r=await fetch(`data/${d}.json`);
+                    return r.ok?await r.json():null
+                }))).filter(d=>d);
+                const u={i:0,o:0,c:0,s:0};
+                let cost=0;
+                data.forEach(d=>{
+                    u.i+=d.usage.input_tokens||0;
+                    u.o+=d.usage.output_tokens||0;
+                    u.c+=d.usage.cache_creation_tokens||0;
+                    u.s+=d.usage.total_sessions||0;
+                    cost+=d.estimated_cost||0
+                });
+                const tot=u.i+u.o+u.c,rem=GOAL-tot,pct=tot/GOAL*100;
+                document.getElementById('totalDevices').textContent=data.length;
+                document.getElementById('totalSessions').textContent=u.s.toLocaleString();
+                document.getElementById('totalCost').textContent='$'+cost.toFixed(2);
+                document.getElementById('totalProcessed').textContent=fmt(tot);
+                document.getElementById('totalProcessedExact').textContent=tot.toLocaleString()+' tokens';
+                document.getElementById('percentage').textContent=pct.toFixed(1)+'%';
+                document.getElementById('current').textContent=fmt(tot);
+                document.getElementById('remaining').textContent=fmt(rem);
+                setTimeout(()=>document.getElementById('progressBar').style.width=Math.min(pct,100)+'%',100);
+                const now=new Date(),dl=new Date('2025-12-31T23:59:59Z'),ps=new Date('2025-10-01T00:00:00Z');
+                const dr=Math.ceil((dl-now)/86400000);
+                if(dr>0){
+                    const de=Math.max(1,Math.ceil((now-ps)/86400000)),avg=tot/de;
+                    const td=Math.ceil((dl-ps)/86400000),proj=avg*td,dt=rem/dr;
+                    const p=document.getElementById('projection');
+                    p.style.display='block';
+                    let h=`<p><strong>Days remaining:</strong> ${dr}</p>`;
+                    h+=`<p><strong>Daily target:</strong> ${fmt(dt)}</p>`;
+                    h+=`<p><strong>Current pace:</strong> ${fmt(avg)}/day</p>`;
+                    h+=`<p><strong>Projected total:</strong> ${fmt(proj)}</p>`;
+                    if(proj>=GOAL){
+                        p.className='projection success';
+                        h+=`<p style="margin-top:10px;font-weight:bold;">✅ ON TRACK! (+${fmt(proj-GOAL)})</p>`
+                    }else{
+                        p.className='projection warning';
+                        h+=`<p style="margin-top:10px;font-weight:bold;">⚠️ BEHIND PACE (-${fmt(GOAL-proj)})<br>Need +${fmt(dt-avg)}/day</p>`
+                    }
+                    document.getElementById('projectionContent').innerHTML=h
+                }
+                const devicesList=document.getElementById('devicesList');
+                devicesList.innerHTML=data.sort((a,b)=>(b.estimated_cost||0)-(a.estimated_cost||0)).map(d=>{
+                    const usage=d.usage;
+                    const devTot=usage.input_tokens+usage.output_tokens+usage.cache_creation_tokens;
+                    const lastUpd=new Date(d.last_updated).toLocaleString('ko-KR');
+                    return`<div class="device-card">
+                        <div class="device-header">
+                            <div class="device-name">🖥️ ${d.device_id}</div>
+                            <div class="device-cost">$${(d.estimated_cost||0).toFixed(2)}</div>
+                        </div>
+                        <div class="device-stats">
+                            <strong>Total Processed:</strong> ${fmt(devTot)} (${devTot.toLocaleString()} tokens)<br>
+                            <strong>Sessions:</strong> ${usage.total_sessions.toLocaleString()}<br>
+                            <strong>Input:</strong> ${usage.input_tokens.toLocaleString()} |
+                            <strong>Output:</strong> ${usage.output_tokens.toLocaleString()}<br>
+                            <strong>Cache Creation:</strong> ${usage.cache_creation_tokens.toLocaleString()}<br>
+                            <strong>Last Updated:</strong> ${lastUpd}
+                        </div>
+                    </div>`
+                }).join('');
+                document.getElementById('loading').style.display='none';
+                document.getElementById('content').style.display='block'
+            }catch(e){
+                document.getElementById('loading').innerHTML='<p>❌ Error loading data</p>'
+            }
+        }
+        load();
+        setInterval(load,300000);
     </script>
 </body>
 </html>
