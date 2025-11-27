@@ -193,6 +193,17 @@ def display_results(db, new_sessions, new_tokens):
 
     print(f"📊 CUMULATIVE TOTAL SESSIONS: {cumulative['total_sessions']:,}")
     print()
+
+    # Calculate total processed (for web dashboard compatibility)
+    total_processed = cumulative['input_tokens'] + cumulative['output_tokens'] + cumulative['cache_creation_tokens']
+    total_processed_m = total_processed / 1_000_000
+
+    print("💰 TOTAL PROCESSED (Web Dashboard View):")
+    print(f"   {total_processed:,} tokens ({total_processed_m:.2f}M)")
+    print(f"   = Input + Output + Cache Creation")
+    print(f"   (This counts toward 100M goal)")
+    print()
+
     print("🔢 CUMULATIVE TOKEN TOTALS:")
     print(f"  Input Tokens:        {cumulative['input_tokens']:,}")
     print(f"  Output Tokens:       {cumulative['output_tokens']:,}")
