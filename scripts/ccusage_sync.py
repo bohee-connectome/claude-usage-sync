@@ -56,15 +56,30 @@ def export_usage_data(output_file):
         # Get device info
         device_id = socket.gethostname().replace('.', '-').replace(' ', '-').lower()
 
-        # Prepare export data
+        # Get cumulative usage
+        cumulative = db.get("cumulative_usage", {})
+
+        # Calculate estimated cost (Sonnet 4.5 pricing)
+        input_cost = (cumulative.get("input_tokens", 0) / 1_000_000) * 3.0
+        output_cost = (cumulative.get("output_tokens", 0) / 1_000_000) * 15.0
+        cache_write_cost = (cumulative.get("cache_creation_tokens", 0) / 1_000_000) * 3.75
+        cache_read_cost = (cumulative.get("cache_read_tokens", 0) / 1_000_000) * 0.30
+        estimated_cost = input_cost + output_cost + cache_write_cost + cache_read_cost
+
+        # Prepare export data (compatible with web dashboard format)
         export_data = {
             "device_id": device_id,
             "last_updated": datetime.now(timezone.utc).isoformat(),
             "period_start": db.get("period_start", "2025-10-01"),
-            "cumulative_usage": db.get("cumulative_usage", {}),
-            "total_sessions": db.get("cumulative_usage", {}).get("total_sessions", 0),
-            "database_created": db.get("created_at"),
-            "database_last_updated": db.get("last_updated")
+            "period_end": datetime.now().strftime("%Y-%m-%d"),
+            "usage": {
+                "input_tokens": cumulative.get("input_tokens", 0),
+                "output_tokens": cumulative.get("output_tokens", 0),
+                "cache_creation_tokens": cumulative.get("cache_creation_tokens", 0),
+                "cache_read_tokens": cumulative.get("cache_read_tokens", 0),
+                "total_sessions": cumulative.get("total_sessions", 0)
+            },
+            "estimated_cost": round(estimated_cost, 2)
         }
 
         # Save to output file
@@ -73,7 +88,6 @@ def export_usage_data(output_file):
             json.dump(export_data, f, indent=2, ensure_ascii=False)
 
         # Display summary
-        cumulative = db.get("cumulative_usage", {})
         total_input = cumulative.get("input_tokens", 0)
         total_output = cumulative.get("output_tokens", 0)
         total_sessions = cumulative.get("total_sessions", 0)
@@ -82,6 +96,7 @@ def export_usage_data(output_file):
         print(f"   Sessions: {total_sessions:,}")
         print(f"   Input tokens: {total_input:,}")
         print(f"   Output tokens: {total_output:,}")
+        print(f"   Estimated cost: ${estimated_cost:.2f}")
         print(f"   → {output_file}")
 
         return True
