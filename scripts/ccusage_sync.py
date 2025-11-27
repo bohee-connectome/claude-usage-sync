@@ -10,11 +10,17 @@ Built with Claude Code
 
 import os
 import sys
+import io
 import json
 import socket
 import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
+
+# Set UTF-8 encoding for Windows
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # Configuration file
 CONFIG_FILE = Path.home() / ".claude" / "usage_sync_config.json"
@@ -32,6 +38,57 @@ def save_config(config):
     CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2)
+
+def export_usage_data(output_file):
+    """Export cumulative usage data to JSON file"""
+    db_file = Path.home() / ".claude" / "cumulative_usage.json"
+
+    if not db_file.exists():
+        print(f"⚠️  No cumulative usage database found at {db_file}")
+        print("   Run 'ccusage' first to initialize the database")
+        return False
+
+    try:
+        # Load cumulative database
+        with open(db_file, 'r', encoding='utf-8') as f:
+            db = json.load(f)
+
+        # Get device info
+        device_id = socket.gethostname().replace('.', '-').replace(' ', '-').lower()
+
+        # Prepare export data
+        export_data = {
+            "device_id": device_id,
+            "last_updated": datetime.now(timezone.utc).isoformat(),
+            "period_start": db.get("period_start", "2025-10-01"),
+            "cumulative_usage": db.get("cumulative_usage", {}),
+            "total_sessions": db.get("cumulative_usage", {}).get("total_sessions", 0),
+            "database_created": db.get("created_at"),
+            "database_last_updated": db.get("last_updated")
+        }
+
+        # Save to output file
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(export_data, f, indent=2, ensure_ascii=False)
+
+        # Display summary
+        cumulative = db.get("cumulative_usage", {})
+        total_input = cumulative.get("input_tokens", 0)
+        total_output = cumulative.get("output_tokens", 0)
+        total_sessions = cumulative.get("total_sessions", 0)
+
+        print(f"✅ Exported usage data for {device_id}")
+        print(f"   Sessions: {total_sessions:,}")
+        print(f"   Input tokens: {total_input:,}")
+        print(f"   Output tokens: {total_output:,}")
+        print(f"   → {output_file}")
+
+        return True
+
+    except Exception as e:
+        print(f"❌ Export failed: {e}")
+        return False
 
 def setup_repo():
     """Setup Git repository for usage tracking"""
@@ -153,18 +210,11 @@ def sync_usage():
     output_file = data_dir / f"{device_id}.json"
 
     print("📊 Exporting local usage...")
-    result = subprocess.run(
-        [sys.executable, str(Path(__file__).parent / 'export_usage.py'), str(output_file)],
-        capture_output=True,
-        text=True
-    )
-
-    if result.returncode != 0:
+    if not export_usage_data(output_file):
         print("❌ Export failed")
-        print(result.stderr)
         sys.exit(1)
 
-    print(result.stdout)
+    print()
 
     # Git sync
     print("🔄 Syncing to Git...")
