@@ -12,8 +12,11 @@ Built with Claude Code
 import sys
 import io
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+# Korea Standard Time (UTC+9)
+KST = timezone(timedelta(hours=9))
 
 # Set UTF-8 encoding
 if sys.platform == 'win32':
@@ -23,7 +26,7 @@ if sys.platform == 'win32':
 # Paths
 CONFIG_FILE = Path.home() / ".claude" / "usage_sync_config.json"
 GOAL_TOKENS = 100_000_000  # 100M tokens
-DEADLINE = datetime(2025, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
+DEADLINE = datetime(2025, 12, 31, 23, 59, 59, tzinfo=KST)
 
 def load_config():
     """Load sync configuration"""
@@ -101,7 +104,7 @@ def calculate_progress(cumulative):
     progress_pct = (total_processed / GOAL_TOKENS) * 100
 
     # Calculate days remaining
-    now = datetime.now(timezone.utc)
+    now = datetime.now(KST)
     days_remaining = (DEADLINE - now).days
 
     # Calculate daily average needed
@@ -164,8 +167,8 @@ def display_goal_progress(cumulative, devices, progress):
 
         # Calculate if we're on track
         # Estimate current daily average
-        period_start = datetime(2025, 10, 1, tzinfo=timezone.utc)
-        days_elapsed = (datetime.now(timezone.utc) - period_start).days
+        period_start = datetime(2025, 10, 1, tzinfo=KST)
+        days_elapsed = (datetime.now(KST) - period_start).days
         if days_elapsed > 0:
             current_daily_avg = progress['total_processed'] / days_elapsed
             print(f"📊 CURRENT PACE:")

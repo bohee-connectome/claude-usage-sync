@@ -13,7 +13,10 @@ import sys
 import io
 import subprocess
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# Korea Standard Time (UTC+9)
+KST = timezone(timedelta(hours=9))
 
 # Set UTF-8 encoding for Windows
 if sys.platform == 'win32':
@@ -113,7 +116,7 @@ def display_results(total_usage, devices):
     """Display formatted results"""
     print("=" * 70)
     print("CLAUDE TOTAL USAGE (All Devices)")
-    print(f"Period: October 1, 2025 - {datetime.now().strftime('%B %d, %Y')}")
+    print(f"Period: October 1, 2025 - {datetime.now(KST).strftime('%B %d, %Y')}")
     print("=" * 70)
     print()
 
@@ -172,7 +175,9 @@ def display_results(total_usage, devices):
         if last_updated != 'Unknown':
             try:
                 dt = datetime.fromisoformat(last_updated.replace('Z', '+00:00'))
-                last_updated = dt.strftime('%Y-%m-%d %H:%M')
+                # Convert to KST
+                dt_kst = dt.astimezone(KST)
+                last_updated = dt_kst.strftime('%Y-%m-%d %H:%M KST')
             except:
                 pass
 

@@ -18,8 +18,11 @@ import sys
 import io
 import json
 import hashlib
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+# Korea Standard Time (UTC+9)
+KST = timezone(timedelta(hours=9))
 
 # Set UTF-8 encoding
 if sys.platform == 'win32':
@@ -29,7 +32,7 @@ if sys.platform == 'win32':
 # Paths
 PROJECT_DIR = Path.home() / ".claude" / "projects"
 DB_FILE = Path.home() / ".claude" / "cumulative_usage.json"
-CUTOFF_DATE = datetime(2025, 10, 1, tzinfo=timezone.utc)
+CUTOFF_DATE = datetime(2025, 10, 1, tzinfo=KST)
 
 def load_database():
     """Load cumulative usage database"""
@@ -39,8 +42,8 @@ def load_database():
 
     # Initialize new database
     return {
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "last_updated": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(KST).isoformat(),
+        "last_updated": datetime.now(KST).isoformat(),
         "period_start": "2025-10-01",
         "cumulative_usage": {
             "input_tokens": 0,
@@ -55,7 +58,7 @@ def load_database():
 
 def save_database(db):
     """Save cumulative usage database"""
-    db["last_updated"] = datetime.now(timezone.utc).isoformat()
+    db["last_updated"] = datetime.now(KST).isoformat()
 
     with open(DB_FILE, 'w', encoding='utf-8') as f:
         json.dump(db, f, indent=2, ensure_ascii=False)
@@ -174,7 +177,7 @@ def display_results(db, new_sessions, new_tokens):
 
     print("=" * 70)
     print("📈 CUMULATIVE CLAUDE USAGE (PERMANENT RECORD)")
-    print(f"Period: October 1, 2025 - {datetime.now().strftime('%B %d, %Y')}")
+    print(f"Period: October 1, 2025 - {datetime.now(KST).strftime('%B %d, %Y')}")
     print("=" * 70)
     print()
 
@@ -249,7 +252,7 @@ def main():
         db["run_history"] = []
 
     db["run_history"].append({
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(KST).isoformat(),
         "new_sessions": new_sessions,
         "new_tokens": new_tokens
     })
