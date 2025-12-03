@@ -320,10 +320,13 @@
                 document.getElementById('current').textContent=fmt(tot);
                 document.getElementById('remaining').textContent=fmt(rem);
                 setTimeout(()=>document.getElementById('progressBar').style.width=Math.min(pct,100)+'%',100);
-                const now=new Date(),dl=new Date('2025-12-31T23:59:59Z'),ps=new Date('2025-10-01T00:00:00Z');
-                const dr=Math.ceil((dl-now)/86400000);
+                // Use KST for date calculations (matching Python code)
+                const kstNow=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
+                const dl=new Date('2026-01-01T00:00:00+09:00'); // End of Dec 31, 2025 KST
+                const ps=new Date('2025-10-01T00:00:00+09:00'); // Oct 1, 2025 00:00 KST
+                const dr=Math.ceil((dl-kstNow)/86400000);
                 if(dr>0){
-                    const de=Math.max(1,Math.ceil((now-ps)/86400000)),avg=tot/de;
+                    const de=Math.max(1,Math.ceil((kstNow-ps)/86400000)),avg=tot/de;
                     const td=Math.ceil((dl-ps)/86400000),proj=avg*td,dt=rem/dr;
                     const p=document.getElementById('projection');
                     p.style.display='block';
