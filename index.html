@@ -272,7 +272,6 @@
             <div class="footer">
                 <div class="footer-links">
                     <a href="https://github.com/bohee-connectome/claude-usage-sync" target="_blank" class="footer-link">📁 GitHub Repository</a>
-                    <button class="refresh-btn" onclick="load()">🔄 Refresh Data</button>
                 </div>
                 <div class="last-updated-footer">
                     Last updated: <span id="lastUpdatedFooter">-</span>
@@ -321,10 +320,8 @@
                 document.getElementById('remaining').textContent=fmt(rem);
                 setTimeout(()=>document.getElementById('progressBar').style.width=Math.min(pct,100)+'%',100);
                 // Use KST for date calculations (matching Python code)
-                const now=new Date();
-                const kstOffset=9*60; // KST is UTC+9 (in minutes)
-                const utc=now.getTime()+(now.getTimezoneOffset()*60000);
-                const kstNow=new Date(utc+(kstOffset*60000));
+                const kstDateStr=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'});
+                const kstNow=new Date(kstDateStr+'T00:00:00+09:00');
                 const dl=new Date('2026-01-01T00:00:00+09:00'); // End of Dec 31, 2025 KST
                 const ps=new Date('2025-10-01T00:00:00+09:00'); // Oct 1, 2025 00:00 KST
                 const dr=Math.ceil((dl-kstNow)/86400000);
