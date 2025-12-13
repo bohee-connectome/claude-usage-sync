@@ -182,7 +182,11 @@ def display_goal_progress(cumulative, devices, progress):
             print(f"🔮 PROJECTION (at current pace):")
             print(f"   Projected total by Dec 31: {projected_total:,.0f} ({projected_total/1_000_000:.2f}M)")
 
-            if projected_total >= GOAL_TOKENS:
+            # Check if goal already achieved
+            if progress['total_processed'] >= GOAL_TOKENS:
+                surplus = progress['total_processed'] - GOAL_TOKENS
+                print(f"   🎉 GOAL ACHIEVED! (+{surplus:,.0f} tokens, +{surplus/1_000_000:.2f}M)")
+            elif projected_total >= GOAL_TOKENS:
                 surplus = projected_total - GOAL_TOKENS
                 print(f"   ✅ ON TRACK! (+{surplus:,.0f} tokens, +{surplus/1_000_000:.2f}M)")
             else:

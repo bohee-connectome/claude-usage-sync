@@ -334,7 +334,10 @@
                     h+=`<p><strong>Daily target:</strong> ${fmt(dt)}</p>`;
                     h+=`<p><strong>Current pace:</strong> ${fmt(avg)}/day</p>`;
                     h+=`<p><strong>Projected total:</strong> ${fmt(proj)}</p>`;
-                    if(proj>=GOAL){
+                    if(tot>=GOAL){
+                        p.className='projection success';
+                        h+=`<p style="margin-top:10px;font-weight:bold;">🎉 GOAL ACHIEVED! (+${fmt(tot-GOAL)})</p>`
+                    }else if(proj>=GOAL){
                         p.className='projection success';
                         h+=`<p style="margin-top:10px;font-weight:bold;">✅ ON TRACK! (+${fmt(proj-GOAL)})</p>`
                     }else{
