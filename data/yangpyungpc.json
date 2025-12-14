@@ -1,8 +1,8 @@
 {
   "device_id": "yangpyungpc",
-  "last_updated": "2025-12-14T14:59:06.193413+00:00",
+  "last_updated": "2025-12-15T00:55:44.620666+09:00",
   "period_start": "2025-10-01",
-  "period_end": "2025-12-14",
+  "period_end": "2025-12-15",
   "usage": {
     "input_tokens": 281823,
     "output_tokens": 3842684,
@@ -10,5 +10,5 @@
     "cache_read_tokens": 568220442,
     "total_sessions": 8964
   },
-  "estimated_cost": 566.0189316
+  "estimated_cost": 566.02
 }
