@@ -1,14 +1,14 @@
 {
   "device_id": "bohees-macbook-air-local",
-  "last_updated": "2025-12-15T11:07:41.045339+09:00",
+  "last_updated": "2025-12-24T13:27:57.902477+09:00",
   "period_start": "2025-10-01",
-  "period_end": "2025-12-15",
+  "period_end": "2025-12-24",
   "usage": {
-    "input_tokens": 20942,
-    "output_tokens": 596000,
-    "cache_creation_tokens": 17691418,
-    "cache_read_tokens": 116179083,
-    "total_sessions": 1804
+    "input_tokens": 21713,
+    "output_tokens": 597985,
+    "cache_creation_tokens": 18573486,
+    "cache_read_tokens": 117692965,
+    "total_sessions": 1855
   },
-  "estimated_cost": 110.2
+  "estimated_cost": 113.99
 }
