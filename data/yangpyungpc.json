@@ -1,8 +1,8 @@
 {
   "device_id": "yangpyungpc",
-  "last_updated": "2025-12-29T09:15:52.970148+00:00",
+  "last_updated": "2025-12-30T12:35:38.220445+00:00",
   "period_start": "2025-10-01",
-  "period_end": "2025-12-29",
+  "period_end": "2025-12-30",
   "usage": {
     "input_tokens": 347466,
     "output_tokens": 4284157,
